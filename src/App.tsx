@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { user } from "./Interfaces/types";
+import { teacher, user } from "./Interfaces/types";
 import NavBar from "./components/Navbar/navbar";
 import { SpeedDial } from "./components/SpeedDial/speedDial";
 import { StartView } from "./components/StartView/startView";
@@ -8,7 +8,7 @@ function App() {
   const [backendData, setBackendData] = useState<any>([]);
 
   useEffect(() => {
-    fetch("/api/getAll")
+    fetch("/api/teachers/getAll")
       .then((response) => response.json())
       .then((data) => {
         setBackendData(data);
@@ -22,8 +22,8 @@ function App() {
       <NavBar/>
       {typeof backendData === "undefined"
         ? apiErr
-        : backendData.map((user: user) => (
-            <p>{user.name}</p>
+        : backendData.map((teacher: teacher) => (
+            <p>{teacher.name} - {teacher.surname} - {teacher.teach_level}</p>
       ))}
       <StartView/>
       <SpeedDial/>
