@@ -12,6 +12,8 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 //import AdbIcon from '@mui/icons-material/Adb';
+import Logo from '../../Resources/Logos/logo-color.png'
+import Theme from '../Reusable/Theme/theme';
 
 const pages = ['Nauczyciele', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -54,7 +56,7 @@ function NavBar() {
               textDecoration: 'none',
             }}
           >
-            LOGO
+            <img src={Logo} height={100}/>
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
