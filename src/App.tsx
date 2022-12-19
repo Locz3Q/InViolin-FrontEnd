@@ -1,38 +1,28 @@
-import React, { useState, useEffect } from "react";
-import { teacher, user } from "./Interfaces/types";
-import NavBar from "./components/Navbar/navbar";
-import { SpeedDial } from "./components/SpeedDial/speedDial";
-import { StartView } from "./components/StartView/startView";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home/Home";
+import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
+import {ThemeProvider} from '@mui/material/styles'
+import theme from "./components/Reusable/Theme/theme";
 
 function App() {
-  const [backendData, setBackendData] = useState<any>([]);
-
-  useEffect(() => {
-    fetch("/api/teachers/getAll")
-      .then((response) => response.json())
-      .then((data) => {
-        setBackendData(data);
-      });
-  }, []);
-  
   // BBThesis
   // iZrnSsV1wFnjUeaF
 
-  const apiErr: JSX.Element = <p>Loading...</p>;
-
   return (
-    <div>
-      <Home/>
-      {/* <NavBar/>
-      {typeof backendData === "undefined"
-        ? apiErr
-        : backendData.map((teacher: teacher) => (
-            <p>{teacher.name} - {teacher.surname} - {teacher.teach_level}</p>
-      ))}
-      <StartView/>
-      <SpeedDial/> */}
-    </div>
+    <>
+      <Router>
+        <ThemeProvider theme={theme}>
+          <div className="container">
+            <Routes>
+              <Route path="/" element={<Home/>} />
+              <Route path="/signin" element={<Login/>} />
+              <Route path="/signup" element={<Register/>} />
+            </Routes>
+          </div>
+        </ThemeProvider>
+      </Router>
+    </>
   );
 }
 

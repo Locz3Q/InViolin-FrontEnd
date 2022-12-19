@@ -3,8 +3,6 @@ import { teacher, user } from "../../Interfaces/types";
 import React, { useEffect, useState } from 'react'
 import NavBar from '../../components/Navbar/navbar'
 import { StartView } from '../../components/StartView/startView';
-import {ThemeProvider} from '@mui/material/styles'
-import theme from '../../components/Reusable/Theme/theme';
 
 const Home = () => {
   const [backendData, setBackendData] = useState<any>([]);
@@ -25,16 +23,14 @@ const Home = () => {
 
   return (
     <div>
-      <ThemeProvider theme={theme}>
-        <NavBar/>
-        {typeof backendData === "undefined"
-          ? apiErr
-          : backendData.map((teacher: teacher) => (
-              <p>{teacher.name} - {teacher.surname} - {teacher.teach_level}</p>
-        ))}
-        <StartView/>
-        <SpeedDial/>
-      </ThemeProvider>
+      <NavBar/>
+      {typeof backendData === "undefined"
+        ? apiErr
+        : backendData.map((teacher: teacher) => (
+            <p>{teacher.name} - {teacher.surname} - {teacher.teach_level}</p>
+      ))}
+      <StartView/>
+      <SpeedDial/>
     </div>
   )
 }
