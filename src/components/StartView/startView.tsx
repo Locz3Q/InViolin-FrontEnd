@@ -1,22 +1,33 @@
-import React from 'react'
-import * as mui from '@mui/material'
-import styled from '@emotion/styled';
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 
 export const StartView = () => {
   return (
-    <mui.Grid container spacing={2}>
-      <mui.Grid xs={6} md={8}>
-        xs=6 md=8
-      </mui.Grid>
-      <mui.Grid xs={6} md={4}>
-        xs=6 md=4 
-      </mui.Grid>
-      <mui.Grid xs={6} md={4}>
-        xs=6 md=4 
-      </mui.Grid>
-      <mui.Grid xs={6} md={8}>
-        xs=6 md=8 
-      </mui.Grid>
-    </mui.Grid>
+    <Box
+      sx={{
+        display: 'flex',
+        flex: '1',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+        '& > :not(style)': {
+          m: 4,
+          width: 400,
+          height: 400,
+        },
+      }}
+    >
+      <Paper elevation={3} />
+      <Paper elevation={3} />
+      <Paper elevation={3} />
+      <Paper elevation={3} />
+      <Paper elevation={3} />
+      <Paper elevation={3} />
+      <Paper elevation={3} />
+      <Paper elevation={3} />
+      <Paper elevation={3} />
+      <Paper elevation={3} />
+    </Box>
   )
 }

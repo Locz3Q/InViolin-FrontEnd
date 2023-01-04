@@ -1,13 +1,11 @@
 // Interfejsy danych z api
 
-export interface user {
-  "name": string,
-  "surname": string,
-  "level": number
-}
-
-export interface teacher {
-  "name": string,
-  "surname": string,
-  "teach_level": number
+export interface User {
+  email: string,
+  username: string,
+  password: string,
+  name: string,
+  surname: string,
+  level: number,
+  isTeacher: boolean
 }

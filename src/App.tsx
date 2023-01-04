@@ -4,6 +4,9 @@ import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import {ThemeProvider} from '@mui/material/styles'
 import theme from "./components/Reusable/Theme/theme";
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import Teachers from "./components/Teachers/Teachers";
 
 function App() {
   // BBThesis
@@ -18,10 +21,12 @@ function App() {
               <Route path="/" element={<Home/>} />
               <Route path="/signin" element={<Login/>} />
               <Route path="/signup" element={<Register/>} />
+              <Route path="/teachers" element={<Teachers />} />
             </Routes>
           </div>
         </ThemeProvider>
       </Router>
+      <ToastContainer/>
     </>
   );
 }

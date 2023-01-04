@@ -5,19 +5,22 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
-//import MenuIcon from '@mui/icons-material/Menu';
 import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
+
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from "@mui/material/MenuItem";
-//import AdbIcon from '@mui/icons-material/Adb';
-import Logo from "../../Resources/Logos/logo-color.png";
-import { Link } from "react-router-dom";
+import Logo from "../../Resources/Logos/logo-no-background.png";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux/es/hooks/useSelector";
+import { useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../../app/store";
+import { logout, reset } from "../../features/auth/authSlice";
 
 const pages = ["Nauczyciele", "Pricing", "Blog"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
-const signOptions = ["Sign In", "Sign Up"];
+const signOptions = ["Zaloguj się", "Zarejestruj się"];
 
 const NavBar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -42,11 +45,22 @@ const NavBar = () => {
     setAnchorElUser(null);
   };
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  const handleLogOut = () => {
+    dispatch(logout());
+    dispatch(reset());
+    navigate('/');
+    setAnchorElUser(null);
+  };
+
   const loggedin = (
     <Box sx={{ flexGrow: 0 }}>
       <Tooltip title="Open settings">
-        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-          <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+        <IconButton onClick={handleOpenUserMenu}>
+          <AccountCircle sx={{ color: "white", fontSize: "45px" }}/>
         </IconButton>
       </Tooltip>
       <Menu
@@ -66,7 +80,7 @@ const NavBar = () => {
         onClose={handleCloseUserMenu}
       >
         {settings.map((setting) => (
-          <MenuItem key={setting} onClick={handleCloseUserMenu}>
+          <MenuItem key={setting} onClick={handleLogOut}>
             <Typography textAlign="center">{setting}</Typography>
           </MenuItem>
         ))}
@@ -87,7 +101,7 @@ const NavBar = () => {
   );
 
   return (
-    <AppBar position="static">
+    <AppBar position="sticky">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Link to={"/"}>
@@ -96,13 +110,8 @@ const NavBar = () => {
               noWrap
               component="a"
               sx={{
-                mr: 2,
+                m: 2,
                 display: { xs: "none", md: "flex" },
-                fontFamily: "monospace",
-                fontWeight: 700,
-                letterSpacing: ".3rem",
-                color: "inherit",
-                textDecoration: "none",
               }}
             >
               <img src={Logo} height={100} />
@@ -111,11 +120,11 @@ const NavBar = () => {
 
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page, index) => (
-              <Link to={"/"}>
+              <Link to={"/teachers"}>
                 <Button
                   key={page}
                   onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: "white", display: "block" }}
+                  sx={{ fontSize: "20px", my: 2, color: "white", display: "block" }}
                 >
                   {page}
                 </Button>
@@ -123,7 +132,7 @@ const NavBar = () => {
             ))}
           </Box>
 
-          {notLoggedin}
+          {user ? loggedin : notLoggedin}
         </Toolbar>
       </Container>
     </AppBar>

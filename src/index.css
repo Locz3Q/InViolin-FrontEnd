@@ -40,6 +40,15 @@ h3 {
   text-align: center;
 }
 
+.teachers {
+  justify-content: space-around;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 3px;
+}
+
 .heading {
   font-size: 2rem;
   font-weight: 700;
