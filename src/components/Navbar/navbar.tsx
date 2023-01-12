@@ -58,6 +58,7 @@ const NavBar = () => {
 
   const loggedin = (
     <Box sx={{ flexGrow: 0 }}>
+      Konto {user?.isTeacher ? 'Nauczycel' : 'Student'}a
       <Tooltip title="Open settings">
         <IconButton onClick={handleOpenUserMenu}>
           <AccountCircle sx={{ color: "white", fontSize: "45px" }}/>
@@ -114,7 +115,7 @@ const NavBar = () => {
                 display: { xs: "none", md: "flex" },
               }}
             >
-              <img src={Logo} height={100} />
+              <img src={Logo} height={60} />
             </Typography>
           </Link>
 

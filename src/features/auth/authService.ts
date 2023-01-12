@@ -15,15 +15,16 @@ const register = async (userData: User) => {
 const login = async (userData: User) => {
   let response;
   
-  response = await axios.post(API_URL_TEACHERS + 'signin', userData);
+  const isTeacher = await axios.post(API_URL_TEACHERS + 'getTeacher', userData)
   
-  if(response.data) {
+  if(isTeacher.data.success) {
+    response = await axios.post(API_URL_TEACHERS + 'signin', userData);
     localStorage.setItem('user', JSON.stringify(response.data));
   }
   else {
     response = await axios.post(API_URL_STUDENTS + 'signin', userData);
     
-    if(response.data) {
+    if(response.data.login) {
       localStorage.setItem('user', JSON.stringify(response.data));
     }
   }

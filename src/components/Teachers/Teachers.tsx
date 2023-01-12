@@ -44,8 +44,8 @@ const Teachers = () => {
       <NavBar />
       {teachers.length > 0 ? (
         <div className="teachers">
-          {teachers.map((teacher: User) => (
-            <Card sx={{ maxWidth: 345, m: 2 }}>
+          {teachers.map((teacher: any) => (
+            <Card sx={{ maxWidth: 345, m: 2 }} key={teacher._id}>
               <CardMedia
                 sx={{ height: 140 }}
                 image={photo}
@@ -59,18 +59,12 @@ const Teachers = () => {
                   Poziom Nauczania: {teacher.level}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Lizards are a widespread group of squamate reptiles, with over 6,000
-                  species, rangingLizards are a widespread group of squamate reptiles, with over 6,000
-                  species, ranging across all continents exceLizards are a widespread group of squamate reptiles, with over 6,000
-                  species, ranging across all continents exceLizards are a widespread group of squamate reptiles, with over 6,000
-                  species, ranging across all continents exceLizards are a widespread group of squamate reptiles, with over 6,000
-                  species, ranging across all continents exceLizards are a widespread group of squamate reptiles, with over 6,000
-                  species, ranging across all continents exce across all continents except Antarctica
+                  {teacher._id}
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="small">Share</Button>
-                <Button size="small">Learn More</Button>
+                <Button size="small" key={teacher._id} >Zobacz profil</Button>
+                <Button size="small" key={teacher._id} title='Wyślij prośbę o indywidualne nauczanie'>Wyślij prośbę</Button>
               </CardActions>
             </Card>
           ))}

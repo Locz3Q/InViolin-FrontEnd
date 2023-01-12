@@ -3,7 +3,7 @@ import { User } from "../../Interfaces/types";
 import authService from "./authService";
 
 // Get user fom localstorage
-const user = JSON.parse(localStorage.getItem('user')!)
+const user: User = JSON.parse(localStorage.getItem('user')!)
 
 const initialState = {
   user: user ? user : null,
