@@ -1,8 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { AddTeacher } from "../../Interfaces/types";
 import teacherService from "./teacherService";
 
 const initialState = {
-  teachers: [],
+  teachers: [] || {},
+  teacher: '',
   isError: false,
   isSuccess: false,
   isLoading: false,
@@ -25,6 +27,37 @@ export const getAllTeachers = createAsyncThunk('teachers',
   }
 );
 
+export const getTeacherByID = createAsyncThunk('teachers/getOne',
+  async (id: string | null, thunkAPI: any) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await teacherService.getTeacherByID(id, token)
+    } catch (error: any) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString()
+      return thunkAPI.rejectWithValue(message)
+    }
+  }
+)
+
+export const addStudentToTeacher = createAsyncThunk('teachers/addStudent', async (data: AddTeacher, thunkAPI) => {
+  try {
+    return await teacherService.addStudentToTeacher(data);
+  } catch (error: any) {
+    const message =
+      (error.response &&
+        error.response.data &&
+        error.response.data.message) ||
+      error.message ||
+      error.toString();
+    return thunkAPI.rejectWithValue(message);
+  }
+})
+
 export const teacherSlice = createSlice({
   name: 'teachers',
   initialState,
@@ -42,6 +75,32 @@ export const teacherSlice = createSlice({
         state.teachers = action.payload
       })
       .addCase(getAllTeachers.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload as string
+      })
+      .addCase(getTeacherByID.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(getTeacherByID.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.teacher = action.payload
+      })
+      .addCase(getTeacherByID.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload as string
+      })
+      .addCase(addStudentToTeacher.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(addStudentToTeacher.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.teachers = action.payload
+      })
+      .addCase(addStudentToTeacher.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload as string

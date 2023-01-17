@@ -18,10 +18,6 @@ import { useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../app/store";
 import { logout, reset } from "../../features/auth/authSlice";
 
-const pages = ["Nauczyciele", "Pricing", "Blog"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
-const signOptions = ["Zaloguj się", "Zarejestruj się"];
-
 const NavBar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
@@ -49,6 +45,10 @@ const NavBar = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
 
+  const pages = [(user?.isTeacher ? "Twoi uczniowie" : "Nauczyciele"), (user ? "Lekcje" : null), "Blog"];
+  const settings = ["Profile", "Account", "Dashboard", "Logout"];
+  const signOptions = ["Zaloguj się", "Zarejestruj się"];
+
   const handleLogOut = () => {
     dispatch(logout());
     dispatch(reset());
@@ -57,7 +57,7 @@ const NavBar = () => {
   };
 
   const loggedin = (
-    <Box sx={{ flexGrow: 0 }}>
+    <Box sx={{ flexGrow: 0, fontSize: '20px'}}>
       Konto {user?.isTeacher ? 'Nauczycel' : 'Student'}a
       <Tooltip title="Open settings">
         <IconButton onClick={handleOpenUserMenu}>
@@ -120,17 +120,26 @@ const NavBar = () => {
           </Link>
 
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page, index) => (
-              <Link to={"/teachers"}>
+            <Link to={user?.isTeacher ? "/students" : "/teachers"}>
+              <Button
+                key={user?.isTeacher ? "Studenci" : "Nauczyciele"}
+                onClick={handleCloseNavMenu}
+                sx={{ fontSize: "20px", my: 2, color: "white", display: "block" }}
+              >
+                {user?.isTeacher ? "Studenci" : "Nauczyciele"}
+              </Button>
+            </Link>
+            {user ? (
+              <Link to={"/lessons"}>
                 <Button
-                  key={page}
+                  key='Lekcje'
                   onClick={handleCloseNavMenu}
                   sx={{ fontSize: "20px", my: 2, color: "white", display: "block" }}
-                >
-                  {page}
+                  >
+                  Lekcje
                 </Button>
               </Link>
-            ))}
+            ) : (<></>)}
           </Box>
 
           {user ? loggedin : notLoggedin}

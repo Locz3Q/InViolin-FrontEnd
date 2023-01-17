@@ -13,11 +13,13 @@ import {toast} from 'react-toastify';
 import { login, reset } from "../../features/auth/authSlice";
 import { AppDispatch } from "../../app/store";
 import Spinner from "../../components/Spinner/spinner";
+import { FormControlLabel, Switch } from "@mui/material";
 
 const Login = () => {
   const [formData, setFormData] = useState({
     username: '',
-    password: ''
+    password: '',
+    isTeacher: false
   });
 
   const {user, isLoading, isError, isSuccess, message} = useSelector((state: any) => state.auth)
@@ -33,33 +35,50 @@ const Login = () => {
     if (isSuccess || user) {
       navigate('/');
     }
-
-    dispatch(reset());
+    
+    return () => {
+      dispatch(reset());
+    }
   }, [user, isError, isSuccess, message, navigate, dispatch]);
 
-  const {username, password} = formData;
+  const {username, password, isTeacher} = formData;
 
   const onChange = (e: any) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }))
-  }
+    if(e.target.name === 'isTeacher') {
+      setFormData((prevState) => ({
+        ...prevState,
+        [e.target.name]: e.target.checked,
+      }));
+    } else {
+      setFormData((prevState) => ({
+        ...prevState,
+        [e.target.name]: e.target.value,
+      }));
+    }
+  };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     const userData = {
       username,
       password,
+      isTeacher
     }
 
     dispatch(login(userData))
-    if(isError) {
-      toast.error(message);
-    }
+    console.log(isError)
   }
 
   if (isLoading) {
-    return <Spinner />
+    return (
+      <>
+        <NavBar />
+        <Spinner />
+      </>
+    )
+  }
+  else if (isError) {
+    toast.dismiss()
+    toast.error('Niepoprawna nazwa użytkownika lub hasło');
   }
 
   return (
@@ -72,6 +91,7 @@ const Login = () => {
             <h2>Sign In</h2>
           </Grid>
           <form onSubmit={onSubmit}>
+            <FormControlLabel control={<Switch onChange={onChange} name="isTeacher" checked={formData.isTeacher} />} label="Teacher" />
             <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
               <Grid item xs={6}> 
                 <TextField name="username" value={username} label='Username' placeholder='Enter username' fullWidth required onChange={onChange}/>

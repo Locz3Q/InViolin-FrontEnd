@@ -7,6 +7,8 @@ import theme from "./components/Reusable/Theme/theme";
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Teachers from "./components/Teachers/Teachers";
+import Lessons from "./components/Lessons/lessons";
+import Students from "./components/Students/Students";
 
 function App() {
   // BBThesis
@@ -22,6 +24,8 @@ function App() {
               <Route path="/signin" element={<Login/>} />
               <Route path="/signup" element={<Register/>} />
               <Route path="/teachers" element={<Teachers />} />
+              <Route path="/lessons" element={<Lessons />} />
+              <Route path="/students" element={<Students/>} />
             </Routes>
           </div>
         </ThemeProvider>

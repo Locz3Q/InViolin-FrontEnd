@@ -24,12 +24,14 @@ const Register = () => {
     name: "",
     surname: "",
     level: 5,
-    isTeacher: false
+    isTeacher: false,
+    teacher: null,
+    lessons: [null]
   });
 
   const [isValid, setIsValid] = useState(true);
 
-  const { email, username, password, password2, name, surname, level, isTeacher } =
+  const { email, username, password, password2, name, surname, level, isTeacher, teacher, lessons } =
     formData;
 
   const navigate = useNavigate();
@@ -69,7 +71,7 @@ const Register = () => {
     e.preventDefault();
 
     if (password !== password2) {
-      toast.error("Passwords do not match");
+      toast.error("Hasła nie są identyczne");
     } else {
       const userData = {
         email,
@@ -78,14 +80,25 @@ const Register = () => {
         name,
         surname,
         level,
-        isTeacher
+        isTeacher,
+        teacher,
+        lessons
       };
       dispatch(register(userData));
     }
   };
 
   if (isLoading) {
-    return <Spinner />;
+    return (
+      <>
+        <NavBar />
+        <Spinner />
+      </>
+    )
+  }
+  else if (isError) {
+    toast.dismiss()
+    toast.error('Użytkownik o takim emailu lub nazwie lub istnieje');
   }
 
   return (
@@ -190,6 +203,7 @@ const Register = () => {
                 aria-label="Level"
                 defaultValue={level}
                 valueLabelDisplay="auto"
+                onChange={onChange}
                 step={1}
                 marks
                 min={0}
