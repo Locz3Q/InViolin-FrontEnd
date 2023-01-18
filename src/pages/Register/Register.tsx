@@ -26,7 +26,7 @@ const Register = () => {
     level: 5,
     isTeacher: false,
     teacher: null,
-    lessons: [null]
+    lessons: []
   });
 
   const [isValid, setIsValid] = useState(true);

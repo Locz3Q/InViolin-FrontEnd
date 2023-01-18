@@ -1,3 +1,5 @@
+import { Dayjs } from 'dayjs';
+
 // Interfejsy danych z api
 
 export interface User {
@@ -10,7 +12,7 @@ export interface User {
   level: number,
   isTeacher: boolean,
   teacher: string | null,
-  lessons: string[] | null[]
+  lessons: string[]
 }
 
 export interface Teacher {
@@ -23,7 +25,7 @@ export interface Teacher {
   surname: string,
   level: number,
   isTeacher: boolean,
-  lessons: string[] | null[]
+  lessons: string[]
 }
 
 export interface Queue {
@@ -39,10 +41,10 @@ export interface AddTeacher {
 }
 
 export interface Lesson {
-  studentId: string,
-  teacherId: string,
-  studentName: string,
+  student: string,
+  teacher: string,
+  studentName?: string,
   topic: string,
   isRemote: boolean,
-  date: string
+  date: Dayjs
 }

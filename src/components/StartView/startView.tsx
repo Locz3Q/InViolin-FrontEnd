@@ -13,6 +13,7 @@ import { Button, CardActions, CardContent, CardMedia, Typography } from '@mui/ma
 import StudentTable from './Elements/StudentTable';
 import Card from '@mui/material/Card/Card';
 import photo from "../../Resources/images/teacher.jpg"
+import { getLessons } from '../../features/lessons/lessonSlice';
 
 // Teacher
 // username: Nauczyciel
@@ -46,7 +47,11 @@ export const StartView = () => {
         dispatch(getTeacherByID(user.teacher));
       }
       else if(user?.isTeacher && 'students' in user && user.students.length > 0) {
-        dispatch(getTeacherStudentsData(user.students))
+        dispatch(getTeacherStudentsData(user.students));
+      }
+      if(user.lessons?.length > 0) {
+        const lessons = user.lessons;
+        dispatch(getLessons(lessons));
       }
     }
     return () => {
@@ -79,11 +84,11 @@ export const StartView = () => {
           </div>
         </>
       </Card>
-      <Card elevation={3}>
+      <Card elevation={3} sx={{ display: "grid", padding: "10px", gridTemplateRows: "40px 290px 20px", justifyContent: "center" }}>
         NoteCord<br/>
         <h6>Przenieś dźwięk na cyfrowy papier</h6>
       </Card>
-      <Card elevation={3}>
+      <Card elevation={3} sx={{ display: "grid", padding: "10px", gridTemplateRows: "40px 290px 20px", justifyContent: "center" }}>
         Twoja najbliższa lekcja
       </Card>
   </>

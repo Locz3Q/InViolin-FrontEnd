@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { User, Teacher } from "../../Interfaces/types";
+import { User, Teacher, Lesson } from "../../Interfaces/types";
 import authService from "./authService";
 
 // Get user fom localstorage

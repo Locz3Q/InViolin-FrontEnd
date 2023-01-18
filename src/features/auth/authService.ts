@@ -1,5 +1,5 @@
 import axios from "axios";
-import { User, Teacher } from "../../Interfaces/types";
+import { User, Teacher, Lesson } from "../../Interfaces/types";
 
 const API_URL_STUDENTS = '/api/students/';
 const API_URL_TEACHERS = '/api/teachers/';
@@ -41,7 +41,9 @@ const getUser = async (userData: any) => {
 const logout = () => {
   localStorage.removeItem('user');
   localStorage.removeItem('students');
+  localStorage.removeItem('teachers');
   localStorage.removeItem('queue');
+  localStorage.removeItem('lessons');
 }
 
 const authService = {

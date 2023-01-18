@@ -45,14 +45,28 @@ const NavBar = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
 
-  const pages = [(user?.isTeacher ? "Twoi uczniowie" : "Nauczyciele"), (user ? "Lekcje" : null), "Blog"];
-  const settings = ["Profile", "Account", "Dashboard", "Logout"];
+  const settings = [(user?.isTeacher ? 'Studenci' : 'Nauczyciele'), "Lekcje", "Wyloguj"];
   const signOptions = ["Zaloguj się", "Zarejestruj się"];
 
   const handleLogOut = () => {
     dispatch(logout());
     dispatch(reset());
     navigate('/');
+    setAnchorElUser(null);
+  };
+
+  const handleLessons = () => {
+    navigate('/lessons');
+    setAnchorElUser(null);
+  };
+
+  const handleTeachers = () => {
+    navigate('/teachers');
+    setAnchorElUser(null);
+  };
+
+  const handleStudents = () => {
+    navigate('/students');
     setAnchorElUser(null);
   };
 
@@ -80,11 +94,18 @@ const NavBar = () => {
         open={Boolean(anchorElUser)}
         onClose={handleCloseUserMenu}
       >
-        {settings.map((setting) => (
-          <MenuItem key={setting} onClick={handleLogOut}>
-            <Typography textAlign="center">{setting}</Typography>
-          </MenuItem>
-        ))}
+        {settings.map((setting) => {
+          if(!user && setting === 'Lekcje') {
+            return (<></>)
+          }
+          else {
+            return (
+              <MenuItem key={setting} onClick={setting === 'Wyloguj' ? handleLogOut : (setting === 'Lekcje' ? handleLessons : (setting === 'Studenci' ? handleStudents : handleTeachers))}>
+                <Typography textAlign="center">{setting}</Typography>
+              </MenuItem>
+            )
+          }
+        })}
       </Menu>
     </Box>
   );

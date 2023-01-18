@@ -9,11 +9,12 @@ import { getTeacherQueue, reset } from "../../features/queue/queueSlice";
 import { getStudentData, resetStudent } from "../../features/users/studentSlice";
 import { User } from "../../Interfaces/types";
 import NavBar from "../Navbar/navbar"
+import Spinner from "../Spinner/spinner";
 import DataTable from "./Elements/QueueTable";
 
 const Students = () => {
   const navigate = useNavigate()
-  const {user} = useSelector((state: RootState) => state.auth);
+  const {user, isError, message} = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
 
   const {queue, isLoading: queueLoading, isError: queueError, message: queueMessage, isSuccess: queueSuccess} = useSelector(
@@ -35,6 +36,9 @@ const Students = () => {
   useEffect(() => {
     if(isErrorStudent) {
       toast.error(messageStudent);
+    }
+    if(isError) {
+      toast.error(message);
     }
     dispatch(getUser(user));
     if(!user) {
@@ -58,6 +62,15 @@ const Students = () => {
       navigate('/');
     }
   }, [queueError, queueMessage, isErrorStudent, messageStudent, dispatch])
+
+  if(isLoadingStudent || queueLoading ) {
+    return (
+      <>
+        <NavBar />
+        <Spinner />
+      </>
+    )
+  }
 
   return (
     <>

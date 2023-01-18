@@ -1,4 +1,4 @@
-import { Button, Card, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, TextField } from '@mui/material';
+import { Button, Card, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, MenuItem, TextField } from '@mui/material';
 import { GridColDef, GridValueGetterParams, DataGrid, GridApi, GridCellValue } from '@mui/x-data-grid';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,6 +10,13 @@ import { useEffect, useState } from 'react';
 import { addTeacherToStudent, getStudentData, resetStudent } from "../../../features/users/studentSlice";
 import { deleteItem, reset } from '../../../features/queue/queueSlice';
 import { addStudentToTeacher } from '../../../features/Teachers/teacherSlice';
+import { LocalizationProvider, DateTimePicker, TimePicker, DesktopDatePicker } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs, { Dayjs } from 'dayjs';
+import Stack from '@mui/material/Stack';
+import { createLesson } from '../../../features/lessons/lessonSlice';
+import { toast } from 'react-toastify';
+import { getUser } from '../../../features/auth/authSlice';
 
 interface Props {
   students: User[],
@@ -17,55 +24,126 @@ interface Props {
 }
 
 const DataTable = (props: Props) => {
-
+  const dispatch = useDispatch<AppDispatch>();
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<Lesson>({
-    studentId: '',
-    teacherId: '',
+    student: '',
+    teacher: '',
     studentName: '',
     topic: '',
     isRemote: false,
-    date: ''
+    date: dayjs()
   })
 
   const onChange = (e: any) => {
     setFormData((prevState) => ({
       ...prevState,
-      [e.target.name]: e.target.checked,
+      [e.target.id]: e.target.value,
     }));
   };
+
+  const dateOnChange = (newDate: any) => {
+    setFormData({
+      student: formData.student,
+      teacher: formData.teacher,
+      studentName: formData.studentName,
+      topic: formData.topic,
+      isRemote: formData.isRemote,
+      date: newDate
+    })
+  }
 
   const handleClose = () => {
     setOpen(false);
   };
 
+  const sendLessonRequest = () => {
+    const dataToSend = {
+      student: formData.student,
+      teacher: formData.teacher,
+      topic: formData.topic,
+      isRemote: formData.isRemote,
+      date: formData.date
+    }
+    dispatch(createLesson(dataToSend))
+  }
+
+  const selectData = [
+    {
+      value: true,
+      label: 'Zdalnie'
+    },
+    {
+      value: false,
+      label: 'Stacjonarnie'
+    }
+  ]
+
+  useEffect(() => {
+    dispatch(getUser(user))
+  }, [dispatch])
+
   const formDialog = (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Zaplanuj Lekcję</DialogTitle>
+      <DialogTitle>Zaplanuj Lekcję dla {formData.studentName}</DialogTitle>
       <DialogContent>
         <DialogContentText>
           Wybierz odpowiedni dzień na przeprowadzenie lekcji, planowany temat ćwiczeń oraz tryb zajęć.
         </DialogContentText>
-        <TextField
-          autoFocus
-          margin="dense"
-          id="name"
-          label="Email Address"
-          type="email"
-          fullWidth
-          variant="standard"
-        />
+        <Stack>
+          <TextField
+            margin="dense"
+            id="topic"
+            label="Temat zajęć"
+            type="topic"
+            onChange={onChange}
+            required
+            fullWidth
+            multiline
+            variant="standard"
+          />
+          <TextField
+            margin="dense"
+            id="isRemote"
+            select
+            label="Tryb zajęć"
+            defaultValue={false}
+            helperText="Podaj planowany tryb zajęć"
+            variant="standard"
+            onChange={onChange}
+          >
+            {selectData.map((option: any) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DesktopDatePicker
+              label="Data"
+              inputFormat="DD-MM-YYYY"
+              value={formData.date}
+              onChange={dateOnChange}
+              renderInput={(params) => <TextField id="date" margin="dense" variant="standard" {...params} />}
+            />
+            <TimePicker
+              ampm={false}
+              label="Czas"
+              value={formData.date}
+              onChange={dateOnChange}
+              renderInput={(params) => <TextField id='date' margin="dense" variant="standard" {...params} />}
+            />
+          </LocalizationProvider>
+        </Stack>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Anuluj</Button>
-        <Button onClick={handleClose}>Zatwierdź</Button>
+        <Button onClick={sendLessonRequest}>Zatwierdź</Button>
       </DialogActions>
     </Dialog>
   )
 
-  const {user} = useSelector((state: RootState) => state.auth);
-
-  const dispatch = useDispatch<AppDispatch>();
+  const {user, message, isSuccess, isError} = useSelector((state: RootState) => state.auth);
 
   const columnsStudents: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 90 },
@@ -112,7 +190,20 @@ const DataTable = (props: Props) => {
             .forEach(
               (c) => (thisRow[c.field] = params.getValue(params.id, c.field))
             );
-            setOpen(true);
+            if(thisRow.id && thisRow.fullName && user?._id) {
+              setOpen(true);
+              const studentId = thisRow.id.toString();
+              const teacherId = user._id;
+              const studentName = thisRow.fullName.toString()
+              setFormData({
+                student: studentId,
+                teacher: teacherId,
+                studentName: studentName,
+                topic: '',
+                isRemote: false,
+                date: dayjs()
+              })
+            }
         };
   
         return <Button onClick={onClick} variant='contained'>Zaplanuj Lekcję</Button>;
