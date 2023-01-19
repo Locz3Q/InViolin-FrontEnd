@@ -7,7 +7,7 @@ const theme = createTheme({
     }
   },
   typography: {
-    fontFamily: 'Alegreya-Sans-SC-Regular'
+    fontFamily: 'Menlo'
   }
 })
 

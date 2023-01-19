@@ -3,20 +3,20 @@ import { GridColDef, GridValueGetterParams, DataGrid, GridApi, GridCellValue } f
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../app/store';
-import { Queue, User, AddTeacher, Lesson } from '../../../Interfaces/types';
+import { User, AddTeacher, Lesson } from '../../../Interfaces/types';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
 import { useEffect, useState } from 'react';
-import { addTeacherToStudent, getStudentData, resetStudent } from "../../../features/users/studentSlice";
+import { addTeacherToStudent, resetStudent } from "../../../features/users/studentSlice";
 import { deleteItem, reset } from '../../../features/queue/queueSlice';
 import { addStudentToTeacher } from '../../../features/Teachers/teacherSlice';
-import { LocalizationProvider, DateTimePicker, TimePicker, DesktopDatePicker } from '@mui/x-date-pickers';
+import { LocalizationProvider, TimePicker, DesktopDatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import Stack from '@mui/material/Stack';
-import { createLesson } from '../../../features/lessons/lessonSlice';
-import { toast } from 'react-toastify';
+import { createLesson, reset as lessonsReset } from '../../../features/lessons/lessonSlice';
 import { getUser } from '../../../features/auth/authSlice';
+import { toast } from 'react-toastify';
 
 interface Props {
   students: User[],
@@ -24,6 +24,9 @@ interface Props {
 }
 
 const DataTable = (props: Props) => {
+  const {user, message} = useSelector((state: RootState) => state.auth);
+  const {lessons, isSuccess, isError, isLoading} = useSelector((state: RootState) => state.lessonsArr);
+
   const dispatch = useDispatch<AppDispatch>();
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<Lesson>({
@@ -57,7 +60,7 @@ const DataTable = (props: Props) => {
     setOpen(false);
   };
 
-  const sendLessonRequest = () => {
+  const sendLessonRequest = async () => {
     const dataToSend = {
       student: formData.student,
       teacher: formData.teacher,
@@ -65,7 +68,24 @@ const DataTable = (props: Props) => {
       isRemote: formData.isRemote,
       date: formData.date
     }
-    dispatch(createLesson(dataToSend))
+    if(dataToSend.date && dataToSend.student && dataToSend.teacher && dataToSend.topic) {
+      const studentHasLesson = lessons?.filter((lesson) => {
+      const dayjsToDate = dayjs(lesson.date).toDate();
+      const dayjsToLessonDate = dayjs(formData.date).toDate();
+      if(`${dayjsToDate.getMonth()}${dayjsToDate.getDate()}${dayjsToDate.getFullYear()}` === `${dayjsToLessonDate.getMonth()}${dayjsToLessonDate.getDate()}${dayjsToLessonDate.getFullYear()}`) return true;
+      })
+      if(studentHasLesson && studentHasLesson.length > 0) {
+        toast.error('Student ma już zaplanowaną lekcję na ten dzień');
+      } else {
+        dispatch(await createLesson(dataToSend));
+        toast.success('Pomyślnie zaplanowano lekcję');
+        setOpen(false);
+      }
+    }
+    else {
+      toast.error('Wypełnij wszystkie potrzebne pola');
+    } 
+    dispatch(lessonsReset());
   }
 
   const selectData = [
@@ -78,10 +98,6 @@ const DataTable = (props: Props) => {
       label: 'Stacjonarnie'
     }
   ]
-
-  useEffect(() => {
-    dispatch(getUser(user))
-  }, [dispatch])
 
   const formDialog = (
     <Dialog open={open} onClose={handleClose}>
@@ -103,8 +119,8 @@ const DataTable = (props: Props) => {
             variant="standard"
           />
           <TextField
+            id='isRemote'
             margin="dense"
-            id="isRemote"
             select
             label="Tryb zajęć"
             defaultValue={false}
@@ -113,7 +129,7 @@ const DataTable = (props: Props) => {
             onChange={onChange}
           >
             {selectData.map((option: any) => (
-              <MenuItem key={option.value} value={option.value}>
+              <MenuItem id='isRemote' value={option.value}>
                 {option.label}
               </MenuItem>
             ))}
@@ -122,8 +138,9 @@ const DataTable = (props: Props) => {
             <DesktopDatePicker
               label="Data"
               inputFormat="DD-MM-YYYY"
-              value={formData.date}
+              value={formData.date.add(1, 'day')}
               onChange={dateOnChange}
+              minDate={formData.date.add(1, 'day')}
               renderInput={(params) => <TextField id="date" margin="dense" variant="standard" {...params} />}
             />
             <TimePicker
@@ -143,8 +160,7 @@ const DataTable = (props: Props) => {
     </Dialog>
   )
 
-  const {user, message, isSuccess, isError} = useSelector((state: RootState) => state.auth);
-
+  
   const columnsStudents: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 90 },
     { field: 'firstName', headerName: 'Imię', width: 130 },
@@ -292,6 +308,7 @@ const DataTable = (props: Props) => {
           }
           // dispatch(reset());
           dispatch(resetStudent());
+          dispatch(getUser(user));
         }
 
         return (
@@ -339,6 +356,10 @@ const DataTable = (props: Props) => {
     } else {
       return []
     }
+  }
+
+  function getCellActions() {
+
   }
   
   return (

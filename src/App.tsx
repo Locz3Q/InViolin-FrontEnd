@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import Teachers from "./components/Teachers/Teachers";
 import Lessons from "./components/Lessons/lessons";
 import Students from "./components/Students/Students";
+import NoteCord from "./components/NoteCord/NoteCord";
 
 function App() {
   // BBThesis
@@ -26,6 +27,7 @@ function App() {
               <Route path="/teachers" element={<Teachers />} />
               <Route path="/lessons" element={<Lessons />} />
               <Route path="/students" element={<Students/>} />
+              <Route path="/notecordApp" element={<NoteCord/>} />
             </Routes>
           </div>
         </ThemeProvider>

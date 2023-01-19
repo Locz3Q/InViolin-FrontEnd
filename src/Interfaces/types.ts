@@ -41,6 +41,7 @@ export interface AddTeacher {
 }
 
 export interface Lesson {
+  _id?: string;
   student: string,
   teacher: string,
   studentName?: string,

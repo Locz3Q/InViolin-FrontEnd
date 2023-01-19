@@ -1,8 +1,7 @@
 import axios from "axios";
 import { AddTeacher, User } from "../../Interfaces/types";
 
-const API_URL_STUDENTS = '/api/students/';
-const API_URL_TEACHERS = '/api/teachers/';
+const API_URL_STUDENTS = 'api/students/';
 
 const getStudent = async (userData: (string | undefined)[]) => {
   const students = userData.join('-');

@@ -65,7 +65,6 @@ const Login = () => {
     }
 
     dispatch(login(userData))
-    console.log(isError)
   }
 
   if (isLoading) {

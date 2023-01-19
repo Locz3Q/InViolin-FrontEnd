@@ -1,4 +1,4 @@
-import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, Card } from '@mui/material';
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, Card } from '@mui/material';
 import { useState, ChangeEvent } from 'react'
 import { User } from '../../../Interfaces/types';
 import { Column, Data } from './tableInterfaces';
@@ -6,12 +6,12 @@ import { Column, Data } from './tableInterfaces';
 const columns: readonly Column[] = [
   { 
     id: 'name', 
-    label: 'Name', 
+    label: 'Imię', 
     minWidth: 80 
   },
   { 
     id: 'surname', 
-    label: 'Surname', 
+    label: 'Nazwisko', 
     minWidth: 80 
   },
   {
@@ -57,7 +57,7 @@ const StudentTable = (props: Props) => {
     setPage(0);
   };
   return (
-    <Card>
+    <Card elevation={0}>
       <TableContainer sx={{ maxHeight: 220 }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -100,7 +100,7 @@ const StudentTable = (props: Props) => {
         component="div"
         count={rows.length}
         rowsPerPage={rowsPerPage}
-        labelRowsPerPage="Wierszy na stronę"
+        labelRowsPerPage="WIlość wierszy"   
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}

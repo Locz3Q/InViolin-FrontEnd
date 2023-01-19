@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Queue } from '../../Interfaces/types';
 
-const API_URL = '/api/queue/'
+const API_URL = 'api/queue/'
 
 const createQueueDocument = async (data: Queue) => {
   const response = await axios.post(API_URL, data);

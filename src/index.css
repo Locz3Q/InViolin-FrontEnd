@@ -34,10 +34,13 @@ h3 {
   margin-bottom: 10px;
 }
 
-.container {
+#root, .container {
+  height: 100%;
   width: 100%;
   margin: 0 auto;
   text-align: center;
+  display: flex;
+  flex-flow: column;
 }
 
 .teachers {
@@ -154,6 +157,161 @@ h3 {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.no-data {
+  margin: 10%;
+  flex: 1 1 auto;
+  text-align: center;
+  font-size: 80px;
+  opacity: 0.4;
+}
+
+.display-flex {
+  background-color: #E5E7EB; 
+  padding: 20px;
+  margin: 2% 20%;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  border-radius: 0.75rem; 
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.show-notes-display {
+  display: flex; 
+  visibility: visible; 
+  padding: 2.5rem; 
+  margin-bottom: 1.25rem; 
+  background-color: #E5E7EB; 
+  transition-delay: 75ms; 
+  transition-property: all; 
+  transition-timing-function: cubic-bezier(0.4, 0, 1, 1); 
+  flex-direction: column; 
+  justify-content: center; 
+  align-items: center; 
+  border-radius: 0.75rem; 
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
+}
+
+.note {
+  font-size: 120px;
+}
+
+.tuner-container {
+  display: flex; 
+  justify-content: center; 
+  height: 100vh; 
+}
+
+.notification {
+  position: fixed; 
+  top: 0; 
+  visibility: visible; 
+  background-color: #9CA3AF; 
+  transition-property: all; 
+  color: #ffffff; 
+  width: 83.333333%; 
+  padding-top: 1rem;
+  padding-bottom: 1rem; 
+  margin-top: 0.5rem; 
+  font-size: 0.75rem;
+  line-height: 1rem; 
+  text-align: center; 
+  border-radius: 9999px; 
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); 
+}
+
+.show-notes {
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+}
+
+
+.show-notes-display-not {
+  visibility: hidden; 
+  transition-property: all; 
+  width: 0; 
+  height: 0; 
+}
+
+.pitch-display {
+  display: flex; 
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; 
+  align-items: flex-start; 
+}
+
+.pitchnote {
+  visibility: visible; 
+  transition-delay: 75ms; 
+  transition-property: all; 
+  font-size: 8rem;
+  line-height: 1; 
+  font-weight: 100; 
+}
+
+.pitchnote-not {
+  visibility: hidden; 
+  font-size: 0.75rem;
+  line-height: 1rem; 
+}
+
+.pitchscale {
+  padding: 0.25rem; 
+  padding-left: 0.5rem;
+  padding-right: 0.5rem; 
+  border-radius: 0.5rem; 
+}
+
+.detune-container {
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  width: 100%; 
+}
+
+.detune-low {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem; 
+  background-image: linear-gradient(to right, var(--tw-gradient-stops)); 
+  background-color: #DC2626; 
+  background-color: #34D399; 
+  --transform-rotate: 180deg; 
+  border-radius: 9999px; 
+}
+
+.pointer {
+  color: #065F46; 
+  font-size: 1.125rem;
+  line-height: 1.75rem; 
+  font-weight: 700; 
+}
+
+.detune-high {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem; 
+  background-image: linear-gradient(to right, var(--tw-gradient-stops)); 
+  background-color: #34D399; 
+  background-color: #DC2626; 
+  border-radius: 9999px; 
+}
+
+.pitch {
+  margin-top: 0.5rem; 
+  color: #9CA3AF; 
+  font-size: 0.75rem;
+  line-height: 1rem; 
+}
+
+.pitch-button {
+  background-color: #DC2626; 
+  transition-property: all; 
+  color: #ffffff; 
+  width: 5rem; 
+  height: 5rem; 
+  border-radius: 9999px; 
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); 
 }
 
 .loadingSpinner {

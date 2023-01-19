@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { AddTeacher } from "../../Interfaces/types";
+import { AddTeacher, User } from "../../Interfaces/types";
 import teacherService from "./teacherService";
 
 const initialState = {
   teachers: [] || {},
-  teacher: '',
+  teacher: null,
   isError: false,
   isSuccess: false,
   isLoading: false,

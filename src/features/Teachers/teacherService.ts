@@ -1,7 +1,7 @@
 import axios from "axios";
 import { AddTeacher } from "../../Interfaces/types";
 
-const API_URL = '/api/teachers/';
+const API_URL = 'api/teachers/';
 
 const getTeachers = async () => {
   const response = await axios.get(API_URL);

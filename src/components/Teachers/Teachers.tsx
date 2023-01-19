@@ -1,5 +1,4 @@
 import NavBar from "../Navbar/navbar";
-import { SpeedAction } from "../SpeedDial/speedDial";
 import { getAllTeachers, reset } from "../../features/Teachers/teacherSlice";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,8 +12,8 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-import photo from "../../Resources/images/teacher.jpg"
-import { createDocument, getQueue, reset as queueReset } from "../../features/queue/queueSlice";
+import photo from "../../Resources/images/teacher.png"
+import { createDocument, getQueue } from "../../features/queue/queueSlice";
 import { toast } from "react-toastify";
 import { Teacher } from "../../Interfaces/types";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
@@ -27,7 +26,7 @@ const Teachers = () => {
     (state: RootState) => state.teachers
   )
 
-  const {queue, isLoading: queueLoading, isError: queueError, message: queueMessage, isSuccess: queueSuccess} = useSelector(
+  const {queue} = useSelector(
     (state: RootState) => state.queueArr
   )
 
@@ -37,7 +36,7 @@ const Teachers = () => {
     context: 'Prośba o nauczanie'
   });
 
-  const {student, teacher, context} = queueItem;
+  const {student, context} = queueItem;
 
   useEffect(() => {
     if(isError) {
@@ -87,15 +86,15 @@ const Teachers = () => {
   return (    
     <>
       <NavBar />
-      <Grid2 container spacing={2}>
-        {teachers.length > 0 ? (
+      {teachers.length > 0 ? (
+        <Grid2 container spacing={2}>
           <div className="teachers">
             {teachers.map((teacher: any) => (
               <Card sx={{ m: 2 }}>
                 <CardMedia
-                  sx={{ height: 140 }}
+                  sx={{ height: 190, padding: "1em 1em 0 1em", objectFit: "contain" }}
                   image={photo}
-                  title="green iguana"
+                  title={`${teacher.name} ${teacher.surname}`}
                   />
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
@@ -105,7 +104,7 @@ const Teachers = () => {
                     Poziom Nauczania: {teacher.level}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {teacher._id}
+                    {teacher.email}
                   </Typography>
                 </CardContent>
                 <CardActions>
@@ -114,11 +113,12 @@ const Teachers = () => {
               </Card>
             ))}
           </div>
-        ) : (
-          <h3>No teachers</h3>
-        )}
-        <SpeedAction />
-      </Grid2>
+        </Grid2>
+      ) : (
+        <div className="no-data">
+          Pusto tu :(
+        </div>
+      )}
     </>
   )
 }

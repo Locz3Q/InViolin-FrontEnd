@@ -1,15 +1,13 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AppDispatch, RootState } from '../../app/store';
-import { getTeacherByID, reset } from '../../features/Teachers/teacherSlice';
-import { getTeacherStudentsData, resetStudent } from '../../features/users/studentSlice';
-import { reset as authReset } from '../../features/auth/authSlice'
-import NavBar from '../Navbar/navbar'
-import { SpeedAction } from '../SpeedDial/speedDial'
-import LessonTable from './Elements/LessonsTable';
+import { getUser } from '../../features/auth/authSlice';
 import { getLessons } from '../../features/lessons/lessonSlice';
-import Spinner from '../Spinner/spinner';
+import { getTeacherByID } from '../../features/Teachers/teacherSlice';
+import { getTeacherStudentsData } from '../../features/users/studentSlice';
+import NavBar from '../Navbar/navbar'
+import LessonTable from './Elements/LessonsTable';
 
 const Lessons = () => {
   const {user} = useSelector((state: RootState) => state.auth);
@@ -27,6 +25,7 @@ const Lessons = () => {
     if(!user) {
       navigate('/signin');
     }
+    dispatch(getUser(user))
     if(user){
       if(!user?.isTeacher && 'teacher' in user && user.teacher) {
         dispatch(getTeacherByID(user.teacher));
@@ -34,9 +33,13 @@ const Lessons = () => {
       else if(user?.isTeacher && 'students' in user && user.students.length > 0) {
         dispatch(getTeacherStudentsData(user.students));
       }
+      if(user.lessons?.length > 0) {
+        const lessons = user.lessons;
+        dispatch(getLessons(lessons));
+      }
     }
 
-  }, [user, dispatch])
+  }, [dispatch])
 
   // if(isLoading || lessonLoading || isLoadingStudent) {
   //   return (

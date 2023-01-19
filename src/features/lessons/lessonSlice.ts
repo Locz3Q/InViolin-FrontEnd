@@ -2,10 +2,10 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Lesson } from "../../Interfaces/types";
 import lessonService from "../lessons/lessonService";
 
-const lessons: Lesson[] = JSON.parse(localStorage.getItem('lessons')!)
+const lessons: Lesson[] = []
 
 const initialState = {
-  lessons: lessons ? lessons : null,
+  lessons: lessons,
   isError: false,
   isSuccess: false,
   isLoading: false,
@@ -29,6 +29,20 @@ export const createLesson = createAsyncThunk('lessons/createLesson', async (data
 export const getLessons = createAsyncThunk('lessons/getLessons', async (ids: string[], thunkAPI) => {
   try {
     return await lessonService.getLessons(ids);
+  } catch (error: any) {
+    const message =
+      (error.response &&
+        error.response.data &&
+        error.response.data.message) ||
+      error.message ||
+      error.toString();
+    return thunkAPI.rejectWithValue(message);
+  }
+})
+
+export const deleteLesson = createAsyncThunk('lesson/delete', async (id: string, thunkAPI) => {
+  try {
+    return await lessonService.deleteLesson(id)
   } catch (error: any) {
     const message =
       (error.response &&
@@ -80,6 +94,22 @@ export const lessonSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
         state.user = null;
+      })
+      .addCase(deleteLesson.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteLesson.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.lessons = state.lessons.filter(
+          (q: any) => q._id !== action.payload.id
+        )
+      })
+      .addCase(deleteLesson.rejected, (state: any, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+        state.lessons = null;
       })
   }
 })

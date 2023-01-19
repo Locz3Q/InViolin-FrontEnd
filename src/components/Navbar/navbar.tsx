@@ -51,10 +51,9 @@ const NavBar = () => {
   const handleLogOut = () => {
     dispatch(logout());
     dispatch(reset());
-    navigate('/');
     setAnchorElUser(null);
   };
-
+  
   const handleLessons = () => {
     navigate('/lessons');
     setAnchorElUser(null);

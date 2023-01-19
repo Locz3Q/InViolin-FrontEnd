@@ -1,8 +1,8 @@
 import axios from "axios";
-import { User, Teacher, Lesson } from "../../Interfaces/types";
+import { User, Teacher } from "../../Interfaces/types";
 
-const API_URL_STUDENTS = '/api/students/';
-const API_URL_TEACHERS = '/api/teachers/';
+const API_URL_STUDENTS = 'api/students/';
+const API_URL_TEACHERS = 'api/teachers/';
 
 const register = async (userData: User | Teacher) => {
   const response = await axios.post((userData.isTeacher ? API_URL_TEACHERS : API_URL_STUDENTS) + 'signup', userData);
@@ -42,6 +42,7 @@ const logout = () => {
   localStorage.removeItem('user');
   localStorage.removeItem('students');
   localStorage.removeItem('teachers');
+  localStorage.removeItem('teacher');
   localStorage.removeItem('queue');
   localStorage.removeItem('lessons');
 }
