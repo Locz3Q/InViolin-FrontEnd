@@ -3,8 +3,15 @@ import { AddTeacher } from "../../Interfaces/types";
 
 const API_URL = 'api/teachers/';
 
+const user: any = JSON.parse(localStorage.getItem('user')!)
+
 const getTeachers = async () => {
-  const response = await axios.get(API_URL);
+  const config = {
+    headers: {
+      Authorization: `Bearer ${user.token}`
+    }
+  }  
+  const response = await axios.get(API_URL, config);
   return response.data;
 }
 
@@ -19,8 +26,13 @@ const getTeacherByID = async(id: string | null, token: string) => {
 }
 
 const addStudentToTeacher = async (data: AddTeacher) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${user.token}`
+    }
+  }  
   const { studentId, teacherId } = data;
-  const response = await axios.put(`${API_URL}addStudent/${teacherId}`, {studentId})
+  const response = await axios.put(`${API_URL}addStudent/${teacherId}`, {studentId}, config)
   return response.data;
 }
 

@@ -42,8 +42,10 @@ const Teachers = () => {
     if(isError) {
       console.log(message);
     }
-    dispatch(getUser(user))
-    dispatch(getQueue(student));
+    if(user){
+      dispatch(getUser(user))
+      dispatch(getQueue(student));
+    }
     dispatch(getAllTeachers());
     return () => {
       dispatch(reset())
@@ -103,13 +105,17 @@ const Teachers = () => {
                   <Typography variant="h6">
                     Poziom Nauczania: {teacher.level}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {teacher.email}
-                  </Typography>
+                  {user ? (
+                    <Typography variant="body2" color="text.secondary">
+                     {teacher.email}
+                    </Typography>
+                  ) : ''}
                 </CardContent>
-                <CardActions>
-                  <Button onClick={() => onClick(teacher)} size="small" key={teacher._id} title='Wyślij prośbę o indywidualne nauczanie'>Wyślij prośbę</Button>
-                </CardActions>
+                {user ? (
+                  <CardActions>
+                    <Button onClick={() => onClick(teacher)} size="small" key={teacher._id} title='Wyślij prośbę o indywidualne nauczanie'>Wyślij prośbę</Button>
+                  </CardActions>
+                ) : ''}
               </Card>
             ))}
           </div>

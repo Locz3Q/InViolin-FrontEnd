@@ -1,4 +1,4 @@
-import { Button, Card, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, MenuItem, TextField } from '@mui/material';
+import { Button, Card, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, MenuItem, Select, TextField } from '@mui/material';
 import { GridColDef, GridValueGetterParams, DataGrid, GridApi, GridCellValue } from '@mui/x-data-grid';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,8 +6,8 @@ import { AppDispatch, RootState } from '../../../app/store';
 import { User, AddTeacher, Lesson } from '../../../Interfaces/types';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
-import { useEffect, useState } from 'react';
-import { addTeacherToStudent, resetStudent } from "../../../features/users/studentSlice";
+import { useState } from 'react';
+import { addTeacherToStudent, resetStudent, erase } from "../../../features/users/studentSlice";
 import { deleteItem, reset } from '../../../features/queue/queueSlice';
 import { addStudentToTeacher } from '../../../features/Teachers/teacherSlice';
 import { LocalizationProvider, TimePicker, DesktopDatePicker } from '@mui/x-date-pickers';
@@ -24,11 +24,12 @@ interface Props {
 }
 
 const DataTable = (props: Props) => {
-  const {user, message} = useSelector((state: RootState) => state.auth);
-  const {lessons, isSuccess, isError, isLoading} = useSelector((state: RootState) => state.lessonsArr);
+  const {user} = useSelector((state: RootState) => state.auth);
+  const {userLessons} = useSelector((state: RootState) => state.lessonsArr);
 
   const dispatch = useDispatch<AppDispatch>();
   const [open, setOpen] = useState(false);
+  const [selectValue, setSelectValue] = useState(false);
   const [formData, setFormData] = useState<Lesson>({
     student: '',
     teacher: '',
@@ -65,14 +66,14 @@ const DataTable = (props: Props) => {
       student: formData.student,
       teacher: formData.teacher,
       topic: formData.topic,
-      isRemote: formData.isRemote,
+      isRemote: selectValue,
       date: formData.date
     }
     if(dataToSend.date && dataToSend.student && dataToSend.teacher && dataToSend.topic) {
-      const studentHasLesson = lessons?.filter((lesson) => {
-      const dayjsToDate = dayjs(lesson.date).toDate();
-      const dayjsToLessonDate = dayjs(formData.date).toDate();
-      if(`${dayjsToDate.getMonth()}${dayjsToDate.getDate()}${dayjsToDate.getFullYear()}` === `${dayjsToLessonDate.getMonth()}${dayjsToLessonDate.getDate()}${dayjsToLessonDate.getFullYear()}`) return true;
+      const studentHasLesson = userLessons?.filter((lesson) => {
+        const dayjsToDate = dayjs(lesson.date).toDate();
+        const dayjsToLessonDate = dayjs(formData.date).toDate();
+        return (`${dayjsToDate.getMonth()}${dayjsToDate.getDate()}${dayjsToDate.getFullYear()}` === `${dayjsToLessonDate.getMonth()}${dayjsToLessonDate.getDate()}${dayjsToLessonDate.getFullYear()}`)
       })
       if(studentHasLesson && studentHasLesson.length > 0) {
         toast.error('Student ma już zaplanowaną lekcję na ten dzień');
@@ -84,20 +85,24 @@ const DataTable = (props: Props) => {
     }
     else {
       toast.error('Wypełnij wszystkie potrzebne pola');
+      dispatch(lessonsReset());
     } 
-    dispatch(lessonsReset());
   }
 
   const selectData = [
     {
-      value: true,
-      label: 'Zdalnie'
-    },
-    {
       value: false,
       label: 'Stacjonarnie'
+    },
+    {
+      value: true,
+      label: 'Zdalnie'
     }
   ]
+
+  const handleSelectOnChange = (event: any) => {
+    setSelectValue(event.target.value);
+  };
 
   const formDialog = (
     <Dialog open={open} onClose={handleClose}>
@@ -118,37 +123,37 @@ const DataTable = (props: Props) => {
             multiline
             variant="standard"
           />
-          <TextField
+          <Select
             id='isRemote'
             margin="dense"
-            select
+            value={selectValue}
             label="Tryb zajęć"
             defaultValue={false}
-            helperText="Podaj planowany tryb zajęć"
             variant="standard"
-            onChange={onChange}
+            onChange={handleSelectOnChange}
           >
             {selectData.map((option: any) => (
-              <MenuItem id='isRemote' value={option.value}>
+              <MenuItem value={option.value}>
                 {option.label}
               </MenuItem>
             ))}
-          </TextField>
+          </Select>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DesktopDatePicker
               label="Data"
               inputFormat="DD-MM-YYYY"
-              value={formData.date.add(1, 'day')}
+              value={formData.date}
               onChange={dateOnChange}
-              minDate={formData.date.add(1, 'day')}
-              renderInput={(params) => <TextField id="date" margin="dense" variant="standard" {...params} />}
+              minDate={dayjs().add(1, 'day')}
+              renderInput={(params) => <TextField helperText="Lekcje można planować z przynajmniej jednodniowym wyprzedzeniem" id="date" margin="dense" variant="standard" {...params} />}
             />
             <TimePicker
               ampm={false}
               label="Czas"
               value={formData.date}
               onChange={dateOnChange}
-              renderInput={(params) => <TextField id='date' margin="dense" variant="standard" {...params} />}
+              minutesStep={5}
+              renderInput={(params) => <TextField helperText="Lekcje powinny odbywać się w minutach podzielnych przez 5" id='date' margin="dense" variant="standard" {...params} />}
             />
           </LocalizationProvider>
         </Stack>
@@ -274,10 +279,13 @@ const DataTable = (props: Props) => {
               (c) => (thisRow[c.field] = params.getValue(params.id, c.field))
             );
           const id = thisRow.id?.toString()
-          if(id) {
+          const studentId = thisRow.idStudent?.toString()
+          if(id && studentId) {
             dispatch(deleteItem(id));
+            dispatch(erase(studentId))
           }
           dispatch(reset())
+          dispatch(getUser(user));
         };
         
         const onClickAdd = (e: any) => {
@@ -306,7 +314,7 @@ const DataTable = (props: Props) => {
               dispatch(deleteItem(id));
             }
           }
-          // dispatch(reset());
+          dispatch(reset());
           dispatch(resetStudent());
           dispatch(getUser(user));
         }
@@ -357,10 +365,6 @@ const DataTable = (props: Props) => {
       return []
     }
   }
-
-  function getCellActions() {
-
-  }
   
   return (
     <>
@@ -383,6 +387,7 @@ const DataTable = (props: Props) => {
               rowsPerPageOptions={[5]}
               checkboxSelection
               localeText={{
+                noRowsLabel: 'Nikogo jeszcze nie zaakceptowano :(',
                 columnMenuSortAsc: 'Sortuj rosnąco',
                 columnMenuSortDesc: 'Sortuj malejąco',
                 columnMenuUnsort: 'Brak sortowania',
@@ -411,6 +416,7 @@ const DataTable = (props: Props) => {
               rowsPerPageOptions={[5]}
               checkboxSelection
               localeText={{
+                noRowsLabel: 'Brak oczekujących próśb',
                 columnMenuSortAsc: 'Sortuj rosnąco',
                 columnMenuSortDesc: 'Sortuj malejąco',
                 columnMenuUnsort: 'Brak sortowania',

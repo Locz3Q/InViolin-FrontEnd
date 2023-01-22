@@ -12,6 +12,14 @@ const initialState = {
   message: ''
 }
 
+const eraseItem = {
+  queue: queue ? queue : [],
+  isError: false,
+  isSuccess: false,
+  isLoading: false,
+  message: ''
+}
+
 export const createDocument = createAsyncThunk('queue/create', async (data: Queue, thunkAPI) => {
   try {
     return await queueService.createQueueDocument(data);
@@ -73,6 +81,9 @@ export const queueSlice = createSlice({
   initialState,
   reducers: {
     reset: (state) => initialState,
+    reloadQueue: (state) => {
+
+    }
   },
   extraReducers: (builder) => {
     builder

@@ -7,7 +7,7 @@ const theme = createTheme({
     }
   },
   typography: {
-    fontFamily: 'Menlo'
+    fontFamily: 'Bahnschrift'
   }
 })
 

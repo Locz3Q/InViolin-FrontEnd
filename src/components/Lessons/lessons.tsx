@@ -11,13 +11,6 @@ import LessonTable from './Elements/LessonsTable';
 
 const Lessons = () => {
   const {user} = useSelector((state: RootState) => state.auth);
-  const {lessons, isLoading: lessonLoading} = useSelector((state: RootState) => state.lessonsArr);
-  const {teacher, isLoading, isError, message} = useSelector(
-    (state: RootState) => state.teachers
-  );
-  const {students, isLoadingStudent, isErrorStudent, messageStudent} = useSelector(
-    (state: RootState) => state.studentsArr
-  );
   const dispatch = useDispatch<AppDispatch>();
   
   const navigate = useNavigate();
@@ -34,8 +27,8 @@ const Lessons = () => {
         dispatch(getTeacherStudentsData(user.students));
       }
       if(user.lessons?.length > 0) {
-        const lessons = user.lessons;
-        dispatch(getLessons(lessons));
+        const userLessons = user.lessons;
+        dispatch(getLessons(userLessons));
       }
     }
 

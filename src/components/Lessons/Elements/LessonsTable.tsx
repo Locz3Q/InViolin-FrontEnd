@@ -1,13 +1,17 @@
-import { Card, Typography } from '@mui/material';
-import { GridColDef, DataGrid } from '@mui/x-data-grid';
+import { Button, Card, Typography } from '@mui/material';
+import { GridColDef, DataGrid, GridApi, GridCellValue } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import * as React from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../app/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../app/store';
+import { deleteLesson, reset, erase } from '../../../features/lessons/lessonSlice';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { getUser } from '../../../features/auth/authSlice';
 
 const LessonTable = () => {
+  const dispatch = useDispatch<AppDispatch>()
   const {user} = useSelector((state: RootState) => state.auth);
-  const {lessons} = useSelector((state: RootState) => state.lessonsArr);
+  const {userLessons} = useSelector((state: RootState) => state.lessonsArr);
   const {teacher, isLoading, isError, message} = useSelector(
     (state: any) => state.teachers
   );
@@ -16,8 +20,8 @@ const LessonTable = () => {
   );
 
   function getStudentLessonsData(): any[] {
-    if(lessons && teacher){
-      const lessonsMap = lessons.map((lesson) => {
+    if(userLessons && teacher){
+      const lessonsMap = userLessons.map((lesson) => {
         const dayjsToDate = dayjs(lesson.date).toDate();
         const YYYY = dayjsToDate.getFullYear();
         var MM = (dayjsToDate.getMonth() + 1).toString();
@@ -39,8 +43,8 @@ const LessonTable = () => {
   }
 
   function getTeacherLessonsData(): any[] {
-    if(lessons && students.length > 0){
-      const lessonsMap = lessons.map((lesson) => {
+    if(userLessons && students.length > 0){
+      const lessonsMap = userLessons.map((lesson) => {
         const filterStudents = students.filter((student) => {
           return student._id === lesson.student;
         })
@@ -65,7 +69,28 @@ const LessonTable = () => {
     }
     return []
   }
-
+  const columnsStudent: GridColDef[] = [
+    { field: 'id', headerName: 'ID', width: 90 },
+    { field: (user?.isTeacher ? 'studentId' : 'teacherId'), headerName: (user?.isTeacher ? 'ID studenta' : 'ID nauczyciela'), width: 90 },
+    { field: 'date', headerName: 'Data i Czas', width: 140 },
+    { field: 'fullName', headerName: (user?.isTeacher ? 'Imię i Nazwisko studenta' : 'Imię i Nazwisko Nauczyciela'), width: 200 },
+    {
+      field: 'topic',
+      headerName: 'Temat',
+      width: 350,
+    },
+    { 
+      field: 'level',
+      headerName: 'Poziom umiejętności',
+      type: 'number',
+      width: 150,
+    },
+    {
+      field: 'remote',
+      headerName: 'Tryb',
+      width: 160,
+    },
+  ]
   const columnsTeacher: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 90 },
     { field: (user?.isTeacher ? 'studentId' : 'teacherId'), headerName: (user?.isTeacher ? 'ID studenta' : 'ID nauczyciela'), width: 90 },
@@ -87,6 +112,39 @@ const LessonTable = () => {
       headerName: 'Tryb',
       width: 160,
     },
+    {
+      field: 'Delete',
+      headerName: 'Usuń lekcję',
+      sortable: false,
+      filterable: false,
+      width: 210,
+      renderCell: (params) => {
+        const onClickDelete = (e: any) => {
+          e.stopPropagation(); // don't select this row after clicking
+  
+          const api: GridApi = params.api;
+          const thisRow: Record<string, GridCellValue> = {};
+  
+          api
+            .getAllColumns()
+            .filter((c) => c.field !== "__check__" && !!c)
+            .forEach(
+              (c) => (thisRow[c.field] = params.getValue(params.id, c.field))
+            );
+          const id = thisRow.id?.toString()
+          if(id) {
+            dispatch(deleteLesson(id));
+            dispatch(erase(id))
+          }
+          dispatch(getUser(user));
+        };
+        return (
+          <Button onClick={onClickDelete} variant='contained' color='error'>
+            <DeleteIcon />
+          </Button>
+        )
+      }
+    } 
   ];
   
   return (
@@ -101,12 +159,13 @@ const LessonTable = () => {
                 columnVisibilityModel: {
                   id: false,
                   studentId: false,
+                  teacherId: false,
                   level: user?.isTeacher ? true : false
                 }
               }
             }}
               rows={user?.isTeacher ? getTeacherLessonsData() : getStudentLessonsData()}
-              columns={columnsTeacher}
+              columns={user?.isTeacher ? columnsTeacher : columnsStudent}
               pageSize={5}
               rowsPerPageOptions={[5]}
               checkboxSelection

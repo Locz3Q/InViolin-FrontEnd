@@ -13,7 +13,8 @@ import {toast} from 'react-toastify';
 import { login, reset } from "../../features/auth/authSlice";
 import { AppDispatch } from "../../app/store";
 import Spinner from "../../components/Spinner/spinner";
-import { FormControlLabel, Switch } from "@mui/material";
+import { FormControlLabel, IconButton, InputAdornment, Switch } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -21,6 +22,9 @@ const Login = () => {
     password: '',
     isTeacher: false
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
+  const handleMouseDownPassword = () => setShowPassword(!showPassword);
 
   const {user, isLoading, isError, isSuccess, message} = useSelector((state: any) => state.auth)
 
@@ -79,28 +83,41 @@ const Login = () => {
     toast.dismiss()
     toast.error('Niepoprawna nazwa użytkownika lub hasło');
   }
-
+  
   return (
     <div>
       <NavBar/>
       <Grid>
         <Paper elevation={10} style={{width:580, margin:"20px auto", padding:"20px"}}>
           <Grid alignItems='center'>
-            <img src={Logo} height={150} />
-            <h2>Sign In</h2>
+            <img alt='InViolin' src={Logo} height={150} />
+            <h2>Zaloguj się</h2>
           </Grid>
           <form onSubmit={onSubmit}>
-            <FormControlLabel control={<Switch onChange={onChange} name="isTeacher" checked={formData.isTeacher} />} label="Teacher" />
+            <FormControlLabel control={<Switch onChange={onChange} name="isTeacher" checked={formData.isTeacher} />} label="Nauczyciel?" />
             <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
               <Grid item xs={6}> 
-                <TextField name="username" value={username} label='Username' placeholder='Enter username' fullWidth required onChange={onChange}/>
+                <TextField name="username" value={username} label='Nazwa Użytkownika' placeholder='Wpisz nazwę' fullWidth required onChange={onChange}/>
               </Grid>
               <Grid item xs={6}>
-                <TextField name="password" value={password} label='Password' placeholder='Enter password' type='password' fullWidth required onChange={onChange}/>
+                <TextField name="password" value={password} label='Hasło' placeholder='Wpisz hasło' type={showPassword ? "text" : "password"} fullWidth required onChange={onChange}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                      >
+                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}/>
               </Grid>
             </Grid>
             <Button type="submit" key={"Submit"} sx={{ my: 2 }} variant="contained">
-                Submit
+                Zaloguj
             </Button>
           </form>
         </Paper>

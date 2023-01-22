@@ -11,7 +11,6 @@ const createLesson = async (data: Lesson) => {
       Authorization: `Bearer ${user.token}`
     }
   }  
-  console.log(user)
   const dataToSend = { teacher: data.teacher, student: data.student, date: data.date, topic: data.topic, isRemote: data.isRemote};
   const response = await axios.post(API_URL_LESSONS, dataToSend, config);
   return response.data;

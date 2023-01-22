@@ -11,7 +11,7 @@ import { Button, CardContent, CardMedia, Typography } from '@mui/material';
 import StudentTable from './Elements/StudentTable';
 import Card from '@mui/material/Card/Card';
 import photo from "../../Resources/images/teacher.png"
-import { getLessons } from '../../features/lessons/lessonSlice';
+import { getLessons, reset as lessonsReset } from '../../features/lessons/lessonSlice';
 import { Link } from 'react-router-dom';
 import Logo from '../../Resources/Logos/logo-no-text.png';
 import dayjs, { Dayjs } from 'dayjs';
@@ -45,7 +45,7 @@ export const StartView = () => {
   const {students, isLoadingStudent, isErrorStudent, messageStudent} = useSelector(
     (state: RootState) => state.studentsArr
   );
-  const {lessons} = useSelector(
+  const {userLessons} = useSelector(
     (state: RootState) => state.lessonsArr
   );
   
@@ -67,7 +67,7 @@ export const StartView = () => {
 
   const nearestLesson = () => {
     var tempLessonId: CalculateDate[] = []
-    const smalestDate = Math.min(...lessons.map((lesson) => {
+    const smalestDate = Math.min(...userLessons.map((lesson) => {
       const {YYYY, MM, DD, HH, MIN} = getStringdate(lesson.date)
 
       const dateMerged = `${YYYY}${MM}${DD}${HH}${MIN}`;
@@ -79,7 +79,7 @@ export const StartView = () => {
       return parseInt(dateMerged);
     }))
     const nearest = tempLessonId.filter(e => e.date === smalestDate.toString())
-    const nearestUserLesson = lessons.filter(e => e._id === nearest[0].id)
+    const nearestUserLesson = userLessons.filter(e => e._id === nearest[0].id)
     return nearestUserLesson[0]
   }
 
@@ -91,12 +91,13 @@ export const StartView = () => {
     return students.filter(student => student._id === id)
   }
 
-
   useEffect(() => {
     if(isError) {
       console.log(message);
     }
-    dispatch(getUser(user));
+    if(user){
+      dispatch(getUser(user));
+    }
     if(user){
       if(!user?.isTeacher && 'teacher' in user && user.teacher) {
         dispatch(getTeacherByID(user.teacher));
@@ -113,14 +114,16 @@ export const StartView = () => {
       dispatch(reset());
       dispatch(authReset());
       dispatch(resetStudent());
+      dispatch(lessonsReset());
     }
   }, [isErrorStudent, messageStudent, isError, message, dispatch]);
 
-  if(isLoading || isLoadingStudent) {
-    return (
-      <Spinner />
-    )
-  };
+
+  // if(isLoading || isLoadingStudent) {
+  //   return (
+  //     <Spinner />
+  //   )
+  // };
 
   const onClick = () => {
     dispatch(getUser(user))
@@ -130,12 +133,14 @@ export const StartView = () => {
     <>
       <Card elevation={3} sx={{ display: "grid", padding: "10px 2px", gridTemplateRows: "40px 290px 20px", justifyContent: "center" }}>
         <>
-          Twoi studenci:<br/>
+          <Typography fontSize={30}>
+            Twoi studenci:<br/>
+          </Typography>
           <Card elevation={0} sx={{ maxWidth:'100%', m: 2 }}>
             {(user && 'students' in user && user.students.length > 0) ? (<StudentTable students={students}/>) : (
-              <div className='no-data' style={{fontSize: '40px'}}>
+              <Typography className='no-data' style={{fontSize: '40px'}}>
                 Nie masz przypisanych studentów
-              </div>
+              </Typography>
               )
             }
           </Card>
@@ -146,10 +151,12 @@ export const StartView = () => {
       </Card>
       <div style={{backgroundImage: `url(${Logo})`, backgroundSize: 'cover'}}>
         <Card elevation={4} sx={{ display: "grid", padding: "10px 2px", gridTemplateRows: "70px 260px 50px", justifyContent: "center", opacity: 0.9 }}>
-          Cyfrowy Stroik<br/>
-          <div className='no-data' style={{fontSize: '30px', opacity: 1}}>
+          <Typography fontSize={30}>
+            Cyfrowy Stroik<br/>
+          </Typography>
+          <Typography className='no-data' style={{fontSize: '30px', opacity: 1}}>
             Przygotuj się do zajęć i nastrój skrzypce za pomocą cyfrowego stroika
-          </div>
+          </Typography>
           <div>
             <Link to='notecordApp'>
               <Button variant="contained">Nastrój się</Button>
@@ -158,7 +165,9 @@ export const StartView = () => {
         </Card>
       </div>
       <Card elevation={3} sx={{ display: "grid", padding: "10px 2px", gridTemplateRows: "60px 130px 140px", justifyContent: "center" }}>
-        Twoja najbliższa lekcja
+        <Typography fontSize={30}>
+          Twoja najbliższa lekcja
+        </Typography>
         {(user && user?.lessons?.length > 0 && nearestLesson() !== undefined) ? (
           <>
             <Typography fontSize={40}>
@@ -180,9 +189,9 @@ export const StartView = () => {
             ) : ''}
           </>
         ) : (
-          <div className='no-data' style={{fontSize: '40px'}}>
+          <Typography className='no-data' fontSize={40}>
             Brak nadchodzących lekcji
-          </div>
+          </Typography>
         )}
       </Card>
   </>
@@ -191,7 +200,9 @@ export const StartView = () => {
   const studentView = (
     <>
       <Card elevation={4} sx={{ display: "grid", padding: "10px 2px", gridTemplateRows: "30px 300px 20px", justifyContent: "center"}}>
-        Twój nauczyciel:<br/>
+        <Typography fontSize={30}>
+          Twój nauczyciel:<br/>
+        </Typography>
         {teacher?.name ? (
           <Card elevation={0} sx={{ maxWidth:'100%', m: 2 }}>
             <CardMedia
@@ -209,9 +220,9 @@ export const StartView = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className='no-data' style={{fontSize: '40px'}}>
+          <Typography className='no-data' style={{fontSize: '40px', marginTop: 2}}>
             Brak Nauczyciela
-          </div>
+          </Typography>
         )}
         <div style={{ alignItems: 'left', justifyContent: 'left'}}>
           <Button variant="contained" onClick={onClick}>Odświerz</Button>
@@ -219,10 +230,12 @@ export const StartView = () => {
       </Card>
       <div style={{backgroundImage: `url(${Logo})`, backgroundSize: 'cover'}}>
         <Card elevation={4} sx={{ display: "grid", padding: "10px 2px", gridTemplateRows: "70px 260px 50px", justifyContent: "center", opacity: 0.9 }}>
-          Cyfrowy Stroik<br/>
-          <div className='no-data' style={{fontSize: '30px', opacity: 1}}>
+          <Typography fontSize={30}>
+            Cyfrowy Stroik<br/>
+          </Typography>
+          <Typography className='no-data' style={{fontSize: '30px', opacity: 1}}>
             Przygotuj się do zajęć i nastrój skrzypce za pomocą cyfrowego stroika
-          </div>
+          </Typography>
           <div>
             <Link to='notecordApp'>
               <Button variant="contained">Nastrój się</Button>
@@ -231,7 +244,9 @@ export const StartView = () => {
         </Card>
       </div>
       <Card elevation={4} sx={{ display: "grid", padding: "10px 2px", gridTemplateRows: "40px 180px 20px", justifyContent: "center" }}>
-        Twoja najbliższa lekcja
+        <Typography fontSize={30}>
+          Twoja najbliższa lekcja
+        </Typography>
         {nearestLesson() !== undefined ? (
           <>
             <Typography fontSize={40}>
@@ -258,10 +273,12 @@ export const StartView = () => {
 
   const notLoggedin = (
     <>
-      <div className='display-flex'>
-        Witaj!
-        Zaloguj się aby móc korzystać z lekcji jako student<br/>lub przeprowadzać lekcje jako nauczyciel.<br/><br/>Jeśli nie masz konta utwórz je i uzupełnij potrzebne dane.
-      </div>
+      <Typography fontSize={25}>
+        <div className='display-flex'>
+          Witaj!
+          Zaloguj się aby móc korzystać z lekcji jako student<br/>lub przeprowadzać lekcje jako nauczyciel.<br/><br/>Jeśli nie masz konta utwórz je i uzupełnij potrzebne dane.
+        </div>
+      </Typography>
       <Box
         sx={{
           display: 'flex',
@@ -277,9 +294,11 @@ export const StartView = () => {
         }}
       >
         <div style={{backgroundImage: `url(${Logo})`, backgroundSize: 'cover'}}>
-          <Card elevation={4} sx={{ display: "grid", padding: "10px 2px", gridTemplateRows: "40px 298px 40px", justifyContent: "center", opacity: 0.9 }}>
-            Cyfrowy Stroik<br/>
-            <h6>Jako niezalogowany użytkownik masz możliwość nastrojenia się za pomocą cyfrowego stroika</h6>
+          <Card elevation={4} sx={{ display: "grid", padding: "10px 2px", gridTemplateRows: "320px 18px 40px", justifyContent: "center", opacity: 0.9 }}>
+            <Typography sx={{fontSize: '30px'}}>
+              Cyfrowy Stroik<br/>
+              <h6>Jako niezalogowany użytkownik masz możliwość nastrojenia się za pomocą cyfrowego stroika</h6>
+            </Typography>
             <div>
               <Link to='notecordApp'>
                 <Button variant="contained">Nastrój się</Button>
@@ -293,9 +312,11 @@ export const StartView = () => {
 
   const loggedIn = (
     <>
-      <div className='display-flex'>
-        Witaj {user?.name} {user?.surname}!
-      </div>
+      <Typography fontSize={30}>
+        <div className='display-flex'>
+          Witaj {user?.name} {user?.surname}!
+        </div>
+      </Typography>
       <Box
         sx={{
           display: 'flex',

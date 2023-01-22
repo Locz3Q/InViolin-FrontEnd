@@ -12,6 +12,16 @@ const initialState = {
   messageStudent: '',
 };
 
+const eraseState = (id: string) => (
+  {students: students.filter(
+    (student) => student._id !== id
+  ),
+  isErrorStudent: false,
+  isSuccessStudent: false,
+  isLoadingStudent: false,
+  messageStudent: ''}
+)
+
 export const getStudentData = createAsyncThunk('students', async (userData: (string | undefined)[], thunkAPI) => {
   try {
     return await studentService.getStudent(userData);
@@ -59,6 +69,11 @@ export const studentSlice = createSlice({
   initialState,
   reducers: {
     resetStudent: (state) => initialState,
+    erase(state, action: PayloadAction<string>) {
+      state.students = state.students.filter(
+        (student) => student._id !== action.payload
+      )
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -104,5 +119,5 @@ export const studentSlice = createSlice({
   },
 });
 
-export const {resetStudent} = studentSlice.actions;
+export const {resetStudent, erase} = studentSlice.actions;
 export default studentSlice.reducer;

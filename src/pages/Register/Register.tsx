@@ -4,7 +4,7 @@ import Switch from "@mui/material/Switch/Switch";
 import TextField from "@mui/material/TextField/TextField";
 import Logo from "../../Resources/Logos/logo-no-text.png";
 import { useState, useEffect } from "react";
-import { Box, Button, FormControl as form, FormControlLabel, Slider, Typography } from "@mui/material";
+import { Box, Button, FormControlLabel, IconButton, InputAdornment, Slider, Typography } from "@mui/material";
 import NavBar from "../../components/Navbar/navbar";
 import { AppDispatch } from "../../app/store";
 import Spinner from "../../components/Spinner/spinner";
@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 
 import { register, reset } from "../../features/auth/authSlice";
 import Stack from "@mui/system/Stack/Stack";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -30,7 +31,16 @@ const Register = () => {
     lessons: []
   });
 
-  const [isValid, setIsValid] = useState(true);
+  const [isValid, setIsValid] = useState({password: true, confirm: true});
+  const [isEmailValid, setIsEmailValid] = useState(true);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
+  const handleMouseDownPassword = () => setShowPassword(!showPassword);
+
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
+  const handleMouseDownConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
 
   const { email, username, password, password2, name, surname, level, isTeacher, teacher, lessons } =
     formData;
@@ -42,6 +52,18 @@ const Register = () => {
     (state: any) => state.auth
   );
 
+  function valid() {
+    if(password !== ''){
+      setIsValid({
+        password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(password),
+        confirm: password === password2
+      });
+    }
+    if(email !== '') {
+      setIsEmailValid(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email))
+    }
+  }
+
   useEffect(() => {
     if (isError) {
       toast.error(message);
@@ -50,9 +72,9 @@ const Register = () => {
     if (isSuccess || user) {
       navigate("/");
     }
-    setIsValid(password === password2);
+    valid()
     dispatch(reset());
-  }, [user, isError, isSuccess, message, navigate, dispatch, password, password2]);
+  }, [user, isError, isSuccess, message, navigate, dispatch, password, password2, email]);
 
   const onChange = (e: any) => {
     if(e.target.name === 'isTeacher') {
@@ -115,7 +137,7 @@ const Register = () => {
           }}
         >
           <Grid alignItems="center">
-            <img src={Logo} height={150} />
+            <img alt="InViolin" src={Logo} height={150} />
             <h2>Rejestracja</h2>
           </Grid>
           <form onSubmit={onSubmit}>
@@ -134,6 +156,7 @@ const Register = () => {
                   fullWidth
                   required
                   onChange={onChange}
+                  error={!isEmailValid}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -153,10 +176,24 @@ const Register = () => {
                   value={password}
                   label="Hasło"
                   placeholder="Wprowadź hasło"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   fullWidth
                   required
                   onChange={onChange}
+                  error={!isValid.password}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                        >
+                          {showPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -165,11 +202,24 @@ const Register = () => {
                   value={password2}
                   label="Potwierdź hasło"
                   placeholder="Wpisz ponownie hasło"
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   fullWidth
                   required
                   onChange={onChange}
-                  error={!isValid}
+                  error={!isValid.confirm}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowConfirmPassword}
+                          onMouseDown={handleMouseDownConfirmPassword}
+                        >
+                          {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -195,7 +245,7 @@ const Register = () => {
                 />
               </Grid>
             </Grid>
-            {formData.isTeacher ? (
+            {/* {formData.isTeacher ? (
               <Grid item xs={6} marginTop={2}>
                 <TextField
                   name="bio"
@@ -207,7 +257,7 @@ const Register = () => {
                   //onChange={onChange}
                 />
               </Grid>
-            ) : ''}
+            ) : ''} */}
             <Box padding={2}>
               <Typography id="input-slider" gutterBottom>
                 Poziom umiejętności {formData.isTeacher ? 'nauczania' : ''}

@@ -94,9 +94,11 @@ const NoteCord = () => {
   return (
     <>
       <NavBar/>
-      <div className='display-flex' style={{ fontSize: '30px' }}>
-        Stroik do skrzypiec
-      </div>
+      <Typography>
+        <div className='display-flex' style={{ fontSize: '30px' }}>
+          Stroik do skrzypiec
+        </div>
+      </Typography>
       <div className='display-flex' style={{ justifyContent: 'space-between' }}>
         <div className='pitch-display'>
           <div className='pitchnote'style={{
@@ -148,9 +150,6 @@ const NoteCord = () => {
         </div>
       </div>
       <div className="tuner-container">
-      <div className='notification'>
-        Please, bring your instrument near to the microphone!
-      </div>
       <div className="show-notes">
         <div
           className={

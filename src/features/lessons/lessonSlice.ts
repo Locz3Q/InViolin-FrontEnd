@@ -1,11 +1,11 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Lesson } from "../../Interfaces/types";
 import lessonService from "../lessons/lessonService";
 
 const lessons: Lesson[] = []
 
 const initialState = {
-  lessons: lessons,
+  userLessons: lessons,
   isError: false,
   isSuccess: false,
   isLoading: false,
@@ -59,10 +59,16 @@ export const lessonSlice = createSlice({
   initialState,
   reducers: {
     reset: (state) => {
+      state.userLessons = [];
       state.isLoading = false;
       state.isError = false;
       state.message = '';
       state.isSuccess = false;
+    },
+    erase(state, action: PayloadAction<string>) {
+      state.userLessons = state.userLessons.filter(
+        (userLesson) => userLesson._id !== action.payload
+      )
     }
   },
   extraReducers: (builder) => {
@@ -73,7 +79,7 @@ export const lessonSlice = createSlice({
       .addCase(createLesson.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.lessons?.push(action.payload)
+        state.userLessons?.push(action.payload)
       })
       .addCase(createLesson.rejected, (state: any, action) => {
         state.isLoading = false;
@@ -87,7 +93,7 @@ export const lessonSlice = createSlice({
       .addCase(getLessons.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.lessons = action.payload
+        state.userLessons = action.payload
       })
       .addCase(getLessons.rejected, (state: any, action) => {
         state.isLoading = false;
@@ -101,7 +107,7 @@ export const lessonSlice = createSlice({
       .addCase(deleteLesson.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.lessons = state.lessons.filter(
+        state.userLessons = state.userLessons.filter(
           (q: any) => q._id !== action.payload.id
         )
       })
@@ -114,5 +120,5 @@ export const lessonSlice = createSlice({
   }
 })
 
-export const {reset} = lessonSlice.actions;
+export const {reset, erase} = lessonSlice.actions;
 export default lessonSlice.reducer;
