@@ -21,7 +21,7 @@ const getTeacherByID = async(id: string | null, token: string) => {
       Authorization: `Bearer ${token}`,
     }
   }
-  const response = await axios.get(API_URL + id)
+  const response = await axios.get(API_URL + id, config)
   return response.data;
 }
 

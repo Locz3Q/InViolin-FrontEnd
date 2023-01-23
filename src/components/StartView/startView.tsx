@@ -200,7 +200,7 @@ export const StartView = () => {
   const studentView = (
     <>
       <Card elevation={4} sx={{ display: "grid", padding: "10px 2px", gridTemplateRows: "30px 300px 20px", justifyContent: "center"}}>
-        <Typography fontSize={30}>
+        <Typography fontSize={30} >
           Twój nauczyciel:<br/>
         </Typography>
         {teacher?.name ? (
